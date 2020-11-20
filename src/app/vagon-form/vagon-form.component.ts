@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Vagon} from '../vagon';
-import {NgForm} from '@angular/forms';
+import {FormControl, FormGroup, NgForm, Validators} from '@angular/forms';
 @Component({
   selector: 'app-vagon',
   templateUrl: './vagon-form.component.html',
@@ -8,7 +8,7 @@ import {NgForm} from '@angular/forms';
 })
 export class VagonComponent implements OnInit {
   manufacturer: string;
-  num: number;
+  num: string;
   statement: string;
   type: string;
   vagons: Vagon[] = [];
@@ -17,6 +17,7 @@ export class VagonComponent implements OnInit {
   check = 0;
   tgdk: number;
   statements  = ['Good', 'Broken', 'In repairing', 'Can use'];
+  // myForm: FormGroup;
   // tslint:disable-next-line:typedef
   // checksum(oper: number){
   //   while (oper % 10 !== 0){
@@ -25,17 +26,19 @@ export class VagonComponent implements OnInit {
   //   }
   // }
   // tslint:disable-next-line:typedef
-  heightco(operate: number): number{
-    if (operate % 2 === 0){
-      operate *= 1;
+  heightco(operate: string): number{
+    this.tgdk = Number(operate);
+    if (this.tgdk % 2 === 0){
+      this.tgdk *= 1;
     }
     else{
-      operate *= 2;
+      this.tgdk *= 2;
     }
-    if (operate > 10){
-      operate = operate[0] + operate[1];
+    operate = String(this.tgdk);
+    if (this.tgdk >= 10){
+      this.tgdk = Number(operate[0]) + Number(operate[1]);
     }
-    return operate;
+    return this.tgdk;
   }
   // tslint:disable-next-line:typedef
   submit(form: NgForm) {
@@ -47,15 +50,22 @@ export class VagonComponent implements OnInit {
       this.heightco(this.num[4]) +
       this.heightco(this.num[5]) +
       this.heightco(this.num[6]);
-
+    // 23621457 7
+    // 1211212
+    // 2 6 6 2 2 4 1+0
+    // 23
+    // 30
+    // 30-23
+    // 7
     // for (this.tgdk = 0; this.sum % 10 !== 0; this.check++) {
     //   this.sum++;
     // }
+    alert(this.sum);
     while (this.sum % 10 !== 0){
       this.sum++;
       this.check++;
     }
-    if (this.check === form.value.num[7]) {
+    if (this.check === Number(form.value.num[7])) {
       switch (form.value.num[0]) {
         case '2': {
           this.type = 'Крытый грузовой вагон';
@@ -95,10 +105,36 @@ export class VagonComponent implements OnInit {
         }
       }
       this.vagons.push(new Vagon(form.value.num, form.value.manufacturer, form.value.statement, this.type));
+      this.check = 0;
     } else {
+      this.check = 0;
       alert('Write correct Number!');
     }
   }
+  constructor() {
+    // this.myForm = new FormGroup({
+    //   vagonNum: new FormControl('Tom', [Validators.required, this.vagonNumValidator]),
+    //   vagonName: new FormControl('', Validators.required)
+    // });
+  }
+  // vagonNumValidator(control: FormControl): {[s: string]: boolean}{
+  //   this.num = control.value;
+  //   this.sum = this.heightco(this.num[0]) +
+  //     this.heightco(this.num[1]) +
+  //     this.heightco(this.num[2]) +
+  //     this.heightco(this.num[3]) +
+  //     this.heightco(this.num[4]) +
+  //     this.heightco(this.num[5]) +
+  //     this.heightco(this.num[6]);
+  //   while (this.sum % 10 !== 0){
+  //     this.sum++;
+  //     this.check++;
+  //   }
+  //   if (this.check === Number(control.value[7])){
+  //     return {vagonNum: true};
+  //   }
+  //   return null;
+  // }
   ngOnInit(): void {
   }
 
