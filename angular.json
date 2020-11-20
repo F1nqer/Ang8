@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "vagony"
+    }
+  },
+  "defaultProject": "vagony",
+  "cli": {
+    "analytics": false
+  }
 }
