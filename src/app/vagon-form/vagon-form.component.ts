@@ -2,8 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Vagon} from '../vagon';
 import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, NgForm, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
-
-// import {VagonNumValidator} from '../vagon-checksum.directive';
+import {CarriageService} from '../carriage.service';
 @Component({
   selector: 'app-vagon',
   templateUrl: './vagon-form.component.html',
@@ -15,95 +14,47 @@ export class VagonComponent implements OnInit {
   num: string;
   statement: string;
   type: string;
-  vagons: Vagon[] = [];
+  vagons: Vagon[];
   sum: number;
   checksum: number;
   check = 0;
   tgdk: number;
   statements = ['Good', 'Broken', 'In repairing', 'Can use'];
   myForm: FormGroup;
+  VagonEditForm: FormGroup;
   editVagonShow: Vagon;
   editVagon: FormControl;
-  constructor() {
+  constructor(private carriageService: CarriageService) {
 
   }
   // tslint:disable-next-line:typedef
   show(num: Vagon){
     this.editVagonShow = num;
   }
-
-  // // tslint:disable-next-line:typedef
-  // // checksum(oper: number){
-  // //   while (oper % 10 !== 0){
-  // //     oper++;
-  // //     this.check++;
-  // //   }
-  // // }
-  // // tslint:disable-next-line:typedef
-  // heightco(operate: string): number{
-  //   let tgdk = Number(operate);
-  //   if (tgdk % 2 === 0){
-  //     tgdk *= 1;
-  //   }
-  //   else{
-  //     tgdk *= 2;
-  //   }
-  //   operate = String(tgdk);
-  //   if (tgdk >= 10){
-  //     tgdk = Number(operate[0]) + Number(operate[1]);
-  //   }
-  //   return tgdk;
-  // }
-
-  // // tslint:disable-next-line:typedef
-  // submit(form: NgForm) {
-  //   // this.num = form.value.num;
-  //   // this.sum = this.heightco(this.num[0]) +
-  //   //   this.heightco(this.num[1]) +
-  //   //   this.heightco(this.num[2]) +
-  //   //   this.heightco(this.num[3]) +
-  //   //   this.heightco(this.num[4]) +
-  //   //   this.heightco(this.num[5]) +
-  //   //   this.heightco(this.num[6]);
-  //   // 2362146 6
-  //   // 1211212
-  //   // 2 6 6 2 2 4 1 2
-  //   // 24
-  //   // 30
-  //   // 30-24
-  //   // 6
-  //   // for (this.tgdk = 0; this.sum % 10 !== 0; this.check++) {
-  //   //   this.sum++;
-  //   // }
-  //   // alert(this.sum);
-  //   // while (this.sum % 10 !== 0){
-  //   //   this.sum++;
-  //   //   this.check++;
-  //   // }
-  //   // if (this.check === Number(form.value.num[7])) {
-  //
-  //   this.check = 0;
-  //   // } else {
-  //   //   this.check = 0;
-  //   //   alert('Write correct Number!');
-  // // }
-  // }
-  // while (sum % 10 !== 0){
-  //   sum++;
-  //   check++;
-  // }
   // tslint:disable-next-line:typedef
-  delete(vagon: Vagon){ // Item to remove
-    this.vagons = this.vagons.filter(obj => obj !== vagon);
+  delete(vagon: Vagon){
+    console.log(this.vagons);
+    this.carriageService.deleteVagon(vagon);
+    this.vagons = this.carriageService.getVagons();
+    console.log(this.vagons);
+    // Item to remove
+    // this.vagons = this.vagons.filter(obj => obj !== vagon);
   }
   // tslint:disable-next-line:typedef
   // tslint:disable-next-line:typedef
   submit2() {
-    this.actionVagon = new Vagon(this.myForm.value.vagonNum, this.myForm.value.vagonManufacturer,
-      this.myForm.value.vagonStatement, this.type);
-    this.actionVagon.correctType();
+    this.carriageService.addVagon(new Vagon(this.myForm.value.vagonNum, this.myForm.value.vagonManufacturer,
+      this.myForm.value.vagonStatement, this.type));
+  }
+  // tslint:disable-next-line:typedef
+  submitEdit(vagon: Vagon) {
+    this.actionVagon = new Vagon(this.VagonEditForm.value.vagonNum, this.VagonEditForm.value.vagonManufacturer,
+      this.VagonEditForm.value.vagonStatement, this.type, vagon.id);
     // tslint:disable-next-line:max-line-length
-    this.vagons.push(this.actionVagon);
+    this.carriageService.updateVagons(vagon);
+    console.log(this.actionVagon);
+    this.vagons = this.carriageService.getVagons();
+    console.log(this.vagons);
   }
   VagonNumValidator(): AsyncValidatorFn {
     return (control: AbstractControl): Promise<ValidationErrors | null> => {
@@ -149,6 +100,13 @@ export class VagonComponent implements OnInit {
       vagonManufacturer: new FormControl(' ', Validators.required),
       vagonStatement: new FormControl('', Validators.required)
     });
+
+    this.VagonEditForm = new FormGroup({
+      vagonNum: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)], this.VagonNumValidator()),
+      vagonManufacturer: new FormControl(' ', Validators.required),
+      vagonStatement: new FormControl('', Validators.required)
+    });
+    this.vagons = this.carriageService.getVagons();
     this.editVagon = new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)], this.VagonNumValidator());
   }
 }

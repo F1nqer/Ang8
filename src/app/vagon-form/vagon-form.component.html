@@ -1,6 +1,6 @@
 <form [formGroup]="myForm" (ngSubmit)="submit2()">
   <div class="form-group">
-    <label>Имя</label>
+    <label>Номер поезда</label>
     <input class="form-control" name="num" formControlName="vagonNum" />
     <br>
     <label>Производитель</label>
@@ -14,26 +14,46 @@
         </select>
   </div>
   <button type="submit" [disabled]="!myForm.valid">Submit</button>
-
-
 </form>
+
 <div><h3>Добавленные элементы:</h3>
   <ul *ngFor="let vagon of vagons">
     <li>{{vagon.type}} {{vagon.manufacturer}} ({{vagon.num}}) - {{vagon.statement}} <button (click)="delete(vagon)">Delete</button> <button (click)="show(vagon)">Edit</button></li>
 
-    <ng-container *ngIf="editVagonShow === vagon; else unset">
-      <div>
-        <input [(ngModel)]="vagon.num" [formControl]="editVagon" />
-        <input [(ngModel)]="vagon.manufacturer"/>
-        <button (click)="vagon.correctType()">{{vagon.type}}</button>
-        <select [(ngModel)]="vagon.statement">
+    <form [formGroup]="VagonEditForm" (ngSubmit)="submitEdit(vagon)">
+      <div class="form-group">
+        <label>Номер</label>
+        <input class="form-control" name="num" formControlName="vagonNum"/>
+        <br>
+        <label>Производитель</label>
+        <input class="form-control" name="manufacturer" formControlName="vagonManufacturer"/>
+        <br>
+        <label>Состояние</label>
+        <select class="form-control" name="statement" formControlName="vagonStatement">
           <option *ngFor="let state of statements" [value]="state">
             {{state}}
           </option>
         </select>
-        <button (click)="show(null)">Stop edit</button>
       </div>
-    </ng-container>
+      <button type="submit" [disabled]="!VagonEditForm.valid">Submit</button>
+    </form>
+
     <ng-container #unset></ng-container>
   </ul>
 </div>
+
+
+
+<!--<ng-container *ngIf="editVagonShow === vagon; else unset">&ndash;&gt;-->
+  <!--      <div>-->
+  <!--        <input [(ngModel)]="vagon.num" [formControl]="editVagon" />-->
+  <!--        <input [(ngModel)]="vagon.manufacturer"/>-->
+  <!--        <button (click)="vagon.correctType()">{{vagon.type}}</button>-->
+  <!--        <select [(ngModel)]="vagon.statement">-->
+  <!--          <option *ngFor="let state of statements" [value]="state">-->
+  <!--            {{state}}-->
+  <!--          </option>-->
+  <!--        </select>-->
+  <!--        <button (click)="show(null)">Stop edit</button>-->
+  <!--      </div>-->
+  <!--    </ng-container><ng-container #unset></ng-container>-->

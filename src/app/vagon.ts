@@ -4,8 +4,9 @@ export class Vagon {
     public num: number,
     public manufacturer: string,
     public statement: string,
-    public type: string
-  ) {  }
+    public type: string,
+    public id?: number
+  ) {  this.correctType(); }
   // tslint:disable-next-line:typedef
   correctType(){
     const check = String(this.num);
