@@ -1,40 +1,39 @@
-<form #myForm="ngForm" novalidate>
+<form [formGroup]="myForm" (ngSubmit)="submit2()">
   <div class="form-group">
+    <label>Имя</label>
+    <input class="form-control" name="num" formControlName="vagonNum" />
+    <br>
     <label>Производитель</label>
-    <input class="form-control" name="manufacturer" [(ngModel)]="manufacturer" required minlength="3" maxlength="50" />
-  </div>
-  <div class="form-group">
-    <label>Номер</label>
-    <input class="form-control" name="num" [(ngModel)]="num"
-           required minlength="8" maxlength="8" />
-  </div>
-  <div class="form-group">
+    <input class="form-control" name="manufacturer" formControlName="vagonManufacturer" />
+    <br>
     <label>Состояние</label>
-    <select class="form-control" name="statement" [(ngModel)]="statement">
-      <option  *ngFor="let state of statements" [value]="state">
-        {{state}}
-      </option>
-    </select>
+        <select class="form-control" name="statement" formControlName="vagonStatement">
+          <option *ngFor="let state of statements" [value]="state">
+            {{state}}
+          </option>
+        </select>
   </div>
-  <div class="form-group">
-    <button [disabled]="myForm.invalid"
-            class="btn btn-default" (click)="submit(myForm)">Добавить</button>
-  </div>
+  <button type="submit" [disabled]="!myForm.valid">Submit</button>
+
+
 </form>
 <div><h3>Добавленные элементы:</h3>
   <ul *ngFor="let vagon of vagons">
-    <li>{{vagon.type}} {{vagon.manufacturer}} ({{vagon.num}}) - {{vagon.statement}}</li>
+    <li>{{vagon.type}} {{vagon.manufacturer}} ({{vagon.num}}) - {{vagon.statement}} <button (click)="delete(vagon)">Delete</button> <button (click)="show(vagon)">Edit</button></li>
+
+    <ng-container *ngIf="editVagonShow === vagon; else unset">
+      <div>
+        <input [(ngModel)]="vagon.num" [formControl]="editVagon" />
+        <input [(ngModel)]="vagon.manufacturer"/>
+        <button (click)="vagon.correctType()">{{vagon.type}}</button>
+        <select [(ngModel)]="vagon.statement">
+          <option *ngFor="let state of statements" [value]="state">
+            {{state}}
+          </option>
+        </select>
+        <button (click)="show(null)">Stop edit</button>
+      </div>
+    </ng-container>
+    <ng-container #unset></ng-container>
   </ul>
 </div>
-
-<!--<form [formGroup]="myForm" novalidate (ngSubmit)="submit()">-->
-<!--  <div class="form-group">-->
-<!--    <label>Имя</label>-->
-<!--    <input class="form-control" name="name" formControlName="userName" />-->
-
-<!--    <div class="alert alert-danger"-->
-<!--         *ngIf="myForm.controls['vagonName'].invalid && myForm.controls['vagonName'].touched">-->
-<!--      Не указано имя-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</form>-->

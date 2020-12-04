@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Vagon} from '../vagon';
-import {FormControl, FormGroup, NgForm, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, NgForm, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {Observable} from 'rxjs';
+
+// import {VagonNumValidator} from '../vagon-checksum.directive';
 @Component({
   selector: 'app-vagon',
   templateUrl: './vagon-form.component.html',
@@ -16,126 +19,175 @@ export class VagonComponent implements OnInit {
   checksum: number;
   check = 0;
   tgdk: number;
-  statements  = ['Good', 'Broken', 'In repairing', 'Can use'];
-  // myForm: FormGroup;
-  // tslint:disable-next-line:typedef
-  // checksum(oper: number){
-  //   while (oper % 10 !== 0){
-  //     oper++;
-  //     this.check++;
-  //   }
-  // }
-  // tslint:disable-next-line:typedef
-  heightco(operate: string): number{
-    this.tgdk = Number(operate);
-    if (this.tgdk % 2 === 0){
-      this.tgdk *= 1;
-    }
-    else{
-      this.tgdk *= 2;
-    }
-    operate = String(this.tgdk);
-    if (this.tgdk >= 10){
-      this.tgdk = Number(operate[0]) + Number(operate[1]);
-    }
-    return this.tgdk;
-  }
-  // tslint:disable-next-line:typedef
-  submit(form: NgForm) {
-    this.num = form.value.num;
-    this.sum = this.heightco(this.num[0]) +
-      this.heightco(this.num[1]) +
-      this.heightco(this.num[2]) +
-      this.heightco(this.num[3]) +
-      this.heightco(this.num[4]) +
-      this.heightco(this.num[5]) +
-      this.heightco(this.num[6]);
-    // 23621457 7
-    // 1211212
-    // 2 6 6 2 2 4 1+0
-    // 23
-    // 30
-    // 30-23
-    // 7
-    // for (this.tgdk = 0; this.sum % 10 !== 0; this.check++) {
-    //   this.sum++;
-    // }
-    alert(this.sum);
-    while (this.sum % 10 !== 0){
-      this.sum++;
-      this.check++;
-    }
-    if (this.check === Number(form.value.num[7])) {
-      switch (form.value.num[0]) {
-        case '2': {
-          this.type = 'Крытый грузовой вагон';
-          break;
-        }
-        case '3': {
-          this.type = 'Специализированный вагон';
-          break;
-        }
-        case '4': {
-          this.type = 'Платформа';
-          break;
-        }
-        case '5': {
-          this.type = 'Платформа';
-          break;
-        }
-        case '6': {
-          this.type = 'Полувагон';
-          break;
-        }
-        case '7': {
-          this.type = 'Цистерна';
-          break;
-        }
-        case '8': {
-          this.type = 'Изотермический вагон';
-          break;
-        }
-        case '9': {
-          this.type = 'Специализированный вагон';
-          break;
-        }
-        default: {
-          this.type = 'Неизвестный вагон';
-          break;
-        }
-      }
-      this.vagons.push(new Vagon(form.value.num, form.value.manufacturer, form.value.statement, this.type));
-      this.check = 0;
-    } else {
-      this.check = 0;
-      alert('Write correct Number!');
-    }
-  }
+  statements = ['Good', 'Broken', 'In repairing', 'Can use'];
+  myForm: FormGroup;
+  editVagonShow: Vagon;
+  editVagon: FormControl;
   constructor() {
-    // this.myForm = new FormGroup({
-    //   vagonNum: new FormControl('Tom', [Validators.required, this.vagonNumValidator]),
-    //   vagonName: new FormControl('', Validators.required)
-    // });
+
   }
-  // vagonNumValidator(control: FormControl): {[s: string]: boolean}{
-  //   this.num = control.value;
-  //   this.sum = this.heightco(this.num[0]) +
-  //     this.heightco(this.num[1]) +
-  //     this.heightco(this.num[2]) +
-  //     this.heightco(this.num[3]) +
-  //     this.heightco(this.num[4]) +
-  //     this.heightco(this.num[5]) +
-  //     this.heightco(this.num[6]);
-  //   while (this.sum % 10 !== 0){
-  //     this.sum++;
-  //     this.check++;
-  //   }
-  //   if (this.check === Number(control.value[7])){
-  //     return {vagonNum: true};
-  //   }
-  //   return null;
-  // }
-  ngOnInit(): void {
+  // tslint:disable-next-line:typedef
+  show(num: Vagon){
+    this.editVagonShow = num;
   }
 
+  // // tslint:disable-next-line:typedef
+  // // checksum(oper: number){
+  // //   while (oper % 10 !== 0){
+  // //     oper++;
+  // //     this.check++;
+  // //   }
+  // // }
+  // // tslint:disable-next-line:typedef
+  // heightco(operate: string): number{
+  //   let tgdk = Number(operate);
+  //   if (tgdk % 2 === 0){
+  //     tgdk *= 1;
+  //   }
+  //   else{
+  //     tgdk *= 2;
+  //   }
+  //   operate = String(tgdk);
+  //   if (tgdk >= 10){
+  //     tgdk = Number(operate[0]) + Number(operate[1]);
+  //   }
+  //   return tgdk;
+  // }
+
+  // // tslint:disable-next-line:typedef
+  // submit(form: NgForm) {
+  //   // this.num = form.value.num;
+  //   // this.sum = this.heightco(this.num[0]) +
+  //   //   this.heightco(this.num[1]) +
+  //   //   this.heightco(this.num[2]) +
+  //   //   this.heightco(this.num[3]) +
+  //   //   this.heightco(this.num[4]) +
+  //   //   this.heightco(this.num[5]) +
+  //   //   this.heightco(this.num[6]);
+  //   // 2362146 6
+  //   // 1211212
+  //   // 2 6 6 2 2 4 1 2
+  //   // 24
+  //   // 30
+  //   // 30-24
+  //   // 6
+  //   // for (this.tgdk = 0; this.sum % 10 !== 0; this.check++) {
+  //   //   this.sum++;
+  //   // }
+  //   // alert(this.sum);
+  //   // while (this.sum % 10 !== 0){
+  //   //   this.sum++;
+  //   //   this.check++;
+  //   // }
+  //   // if (this.check === Number(form.value.num[7])) {
+  //
+  //   this.check = 0;
+  //   // } else {
+  //   //   this.check = 0;
+  //   //   alert('Write correct Number!');
+  // // }
+  // }
+  // while (sum % 10 !== 0){
+  //   sum++;
+  //   check++;
+  // }
+  // tslint:disable-next-line:typedef
+  delete(vagon: Vagon){ // Item to remove
+    this.vagons = this.vagons.filter(obj => obj !== vagon);
+  }
+  // tslint:disable-next-line:typedef
+  find(num: string){
+    switch (num[0]) {
+      case '2': {
+        this.type = 'Крытый грузовой вагон';
+        break;
+      }
+      case '3': {
+        this.type = 'Специализированный вагон';
+        break;
+      }
+      case '4': {
+        this.type = 'Платформа';
+        break;
+      }
+      case '5': {
+        this.type = 'Платформа';
+        break;
+      }
+      case '6': {
+        this.type = 'Полувагон';
+        break;
+      }
+      case '7': {
+        this.type = 'Цистерна';
+        break;
+      }
+      case '8': {
+        this.type = 'Изотермический вагон';
+        break;
+      }
+      case '9': {
+        this.type = 'Специализированный вагон';
+        break;
+      }
+      default: {
+        this.type = 'Неизвестный вагон';
+        break;
+      }
+    }
+  }
+  // tslint:disable-next-line:typedef
+  submit2() {
+    this.find(this.myForm.value);
+    // tslint:disable-next-line:max-line-length
+    this.vagons.push(new Vagon(this.myForm.value.vagonNum, this.myForm.value.vagonManufacturer,
+      this.myForm.value.vagonStatement, this.type));
+  }
+  VagonNumValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Promise<ValidationErrors | null> => {
+      return new Promise((resolve) => {
+        let sum = 0;
+        let i = 0;
+        let check;
+        let tgdk;
+        while (i < 7) {
+          tgdk = Number(control.value[i]);
+          if (Number(tgdk) % 2 === 0) {
+            tgdk *= 1;
+          }
+          else {
+            tgdk *= 2;
+          }
+          check = String(tgdk);
+          if (tgdk >= 10) {
+            tgdk = Number(check[0]) + Number(check[1]);
+          }
+          sum += tgdk;
+          i++;
+        }
+        check = 0;
+        while (sum % 10 !== 0) {
+          sum++;
+          check++;
+        }
+        alert(check);
+        if (check === Number(control.value[7])){
+          resolve(null);
+        }
+        else{
+          resolve({vagonNum: true});
+        }
+      });
+    };
+  }
+
+  ngOnInit(): void {
+    this.myForm = new FormGroup({
+      vagonNum: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)], this.VagonNumValidator()),
+      vagonManufacturer: new FormControl(' ', Validators.required),
+      vagonStatement: new FormControl('', Validators.required)
+    });
+    this.editVagon = new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)], this.VagonNumValidator());
+  }
 }
+
