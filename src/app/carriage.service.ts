@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Vagon} from './vagon';
-
+import {LoggerService} from './logger.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -10,25 +10,31 @@ export class CarriageService {
   addVagon(vagon: Vagon){
     vagon.id = this.vagons.length;
     this.vagons.push(vagon);
+    this.loggerService.write('Операция добавления вагона');
   }
   // tslint:disable-next-line:typedef
   getVagons(){
+    this.loggerService.write('Операция получения вагонов');
     return this.vagons;
   }
   // tslint:disable-next-line:typedef
-  updateVagons(vagon: Vagon){
+  updateVagons(vagon: Vagon): Vagon[] {
+    this.loggerService.write('Операция обновления вагона');
+    for (let i = 0; i < this.vagons.length; i++) {
+          if (this.vagons[i].id === vagon.id) {
+            this.vagons[i] = vagon;
+            console.log(vagon);
+          }
+        }
+    return this.vagons;
+    // this.deleteVagon(vagon);
+    // this.addVagon(vagon);
+    // this.vagons.sort((prev, next) => prev.id - next.id);
     // for (let v of this.vagons){
     //   if (v.id === vagon.id){
     //     v = vagon;
     //   }
     // }
-    for (let i = 0; i < this.vagons.length; i++){
-      if (this.vagons[i].id !== vagon.id) { continue; }
-
-      this.vagons[i] = vagon;
-      return this.vagons;
-    }
-  }
     // const testList = this.vagons.map(o => {
     //   if (o.id === vagon.id) {
     //     return vagon;
@@ -36,16 +42,15 @@ export class CarriageService {
     //   return o;
     // });
     // this.vagons = testList;
-    // for (let i = 0; i < this.vagons.length; i++){
-    //   if (this.vagons[i].id === vagon.id){
-    //     this.vagons[i] = vagon;
-    //     console.log(vagon);
-    //   }
-    // }
+  }
   // tslint:disable-next-line:typedef
   deleteVagon(vagon: Vagon){ // Item to remove
+    this.loggerService.write('Операция удаления вагона');
     this.vagons = this.vagons.filter(obj => obj !== vagon);
+    return this.vagons;
   }
 
-  constructor() { }
+  constructor(private loggerService: LoggerService) {
+
+  }
 }
