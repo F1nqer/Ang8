@@ -27,9 +27,6 @@ export class CarriageService {
           }
         }
     return this.vagons;
-    // this.deleteVagon(vagon);
-    // this.addVagon(vagon);
-    // this.vagons.sort((prev, next) => prev.id - next.id);
     // for (let v of this.vagons){
     //   if (v.id === vagon.id){
     //     v = vagon;
