@@ -10,6 +10,7 @@ import {Observable} from 'rxjs';
   styleUrls: ['./vagon-form.component.css']
 })
 export class VagonComponent implements OnInit {
+  actionVagon: Vagon;
   manufacturer: string;
   num: string;
   statement: string;
@@ -96,52 +97,13 @@ export class VagonComponent implements OnInit {
     this.vagons = this.vagons.filter(obj => obj !== vagon);
   }
   // tslint:disable-next-line:typedef
-  find(num: string){
-    switch (num[0]) {
-      case '2': {
-        this.type = 'Крытый грузовой вагон';
-        break;
-      }
-      case '3': {
-        this.type = 'Специализированный вагон';
-        break;
-      }
-      case '4': {
-        this.type = 'Платформа';
-        break;
-      }
-      case '5': {
-        this.type = 'Платформа';
-        break;
-      }
-      case '6': {
-        this.type = 'Полувагон';
-        break;
-      }
-      case '7': {
-        this.type = 'Цистерна';
-        break;
-      }
-      case '8': {
-        this.type = 'Изотермический вагон';
-        break;
-      }
-      case '9': {
-        this.type = 'Специализированный вагон';
-        break;
-      }
-      default: {
-        this.type = 'Неизвестный вагон';
-        break;
-      }
-    }
-  }
   // tslint:disable-next-line:typedef
   submit2() {
-    this.find(this.myForm.value);
+    this.actionVagon = new Vagon(this.myForm.value.vagonNum, this.myForm.value.vagonManufacturer,
+      this.myForm.value.vagonStatement, this.type);
+    this.actionVagon.correctType();
     // tslint:disable-next-line:max-line-length
-    this.vagons.push(new Vagon(this.myForm.value.vagonNum, this.myForm.value.vagonManufacturer,
-      this.myForm.value.vagonStatement, this.type));
+    this.vagons.push(this.actionVagon);
   }
   VagonNumValidator(): AsyncValidatorFn {
     return (control: AbstractControl): Promise<ValidationErrors | null> => {
